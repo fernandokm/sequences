@@ -1,5 +1,7 @@
 package sequences
 
+import "math"
+
 // +gen sequenceGenerator:"Iterator[int64,uint64]"
 type PrimeGenerator struct {
 	bufferSize int
@@ -13,26 +15,38 @@ func (fg *PrimeGenerator) newInt64Generator() func() int64 {
 func (fg *PrimeGenerator) newUint64Generator() func() uint64 {
 	primes := make(chan uint64, 1)
 
+	primeList := []uint64{}
+
 	isPrime := func(n uint64) bool {
+		max := uint64(math.Sqrt(float64(n)))
+		for _, p := range primeList {
+			if n%p == 0 {
+				return false
+			}
+			if p > max {
+				break
+			}
+		}
 		return true
 	}
 
 	addPrime := func(prime uint64) {
 		primes <- prime
-		oldIsPrime := isPrime
-		isPrime = func(n uint64) bool {
-			return oldIsPrime(n) && (n%prime != 0)
+		primeList = append(primeList, prime)
+	}
+
+	tryNumber := func(n uint64) {
+		if isPrime(n) {
+			addPrime(n)
 		}
 	}
 
 	go func() {
-		for _, p := range []uint64{2, 3, 5, 7, 11, 13} {
+		for _, p := range []uint64{2, 3, 5, 7, 11, 13, 17} {
 			addPrime(p)
 		}
-		for i := uint64(17); ; i += 2 {
-			if isPrime(i) {
-				addPrime(i)
-			}
+		for i := uint64(19); ; i += 2 {
+			tryNumber(i)
 		}
 	}()
 
