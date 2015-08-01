@@ -1,33 +1,29 @@
 package sequences
 
-import (
-	"math/big"
-	"testing"
-)
+import "testing"
 
 const takeCount = 1e3
 
 func BenchmarkInt64(b *testing.B) {
-	fib := NewFibonacciGenerator()
+	fib := NewFibonacciGenerator(true)
 	for i := 0; i < b.N; i++ {
-		for _ = range fib.UpToInt64(takeCount) {
+		for _ = range fib.TakeInt64(takeCount) {
 		}
 	}
 }
 
 func BenchmarkUint64(b *testing.B) {
-	fib := NewFibonacciGenerator()
+	fib := NewFibonacciGenerator(true)
 	for i := 0; i < b.N; i++ {
-		for _ = range fib.UpToUint64(takeCount) {
+		for _ = range fib.TakeUint64(takeCount) {
 		}
 	}
 }
 
 func BenchmarkBigInt(b *testing.B) {
-	fib := NewFibonacciGenerator()
-	count := big.NewInt(takeCount)
+	fib := NewFibonacciGenerator(true)
 	for i := 0; i < b.N; i++ {
-		for _ = range fib.UpToBigInt(count) {
+		for _ = range fib.TakeBigInt(takeCount) {
 		}
 	}
 }
